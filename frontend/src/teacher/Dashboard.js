@@ -13,12 +13,16 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  ListItemAvatar,
   Button,
   Chip,
   Avatar,
   IconButton,
   Badge,
   TextField,
+  LinearProgress,
+  InputAdornment,
+  Divider,
 } from '@mui/material';
 import {
   AccessTime,
@@ -34,14 +38,65 @@ import {
   ArrowForward as ArrowForwardIcon,
   Info as InfoIcon,
   Event as EventIcon,
+  PhotoCamera as PhotoCameraIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import ClassIcon from '@mui/icons-material/Class';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import StarIcon from '@mui/icons-material/Star';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import TeacherNav from '../components/TeacherNav';
 import TeacherLayout from '../components/TeacherLayout';
+
+// 主题颜色
+const theme = {
+  primary: '#2e7d32',
+  primaryLight: '#4caf50',
+  primaryDark: '#1b5e20',
+  secondary: '#f5f5f5',
+  text: {
+    primary: '#333333',
+    secondary: '#666666',
+    light: '#999999'
+  },
+  background: {
+    paper: '#ffffff',
+    default: '#f5f5f5'
+  },
+  success: '#4caf50',
+  warning: '#ff9800',
+  error: '#f44336',
+  info: '#2196f3'
+};
+
+// 通用卡片样式
+const cardStyle = {
+  p: 3,
+  height: '100%',
+  borderRadius: 2,
+  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+  transition: 'all 0.3s ease',
+  background: theme.background.paper,
+  '&:hover': {
+    boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+    transform: 'translateY(-4px)'
+  }
+};
+
+// 标题样式
+const titleStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  mb: 3,
+  pb: 2,
+  borderBottom: `2px solid ${theme.primaryLight}`,
+  '& .MuiTypography-root': {
+    fontWeight: 600,
+    color: theme.primary
+  },
+  '& .MuiSvgIcon-root': {
+    mr: 1.5,
+    color: theme.primary
+  }
+};
 
 const TeacherDashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -296,78 +351,54 @@ const TeacherDashboard = () => {
   ];
 
   return (
-    <Grid container spacing={3}>
+    <Box sx={{ p: { xs: 2, sm: 3 } }}>
       {/* Left Side: Profile Card */}
-      <Grid item xs={12} md={4}>
-        <Paper sx={{ p: 3, height: '100%' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-            <Box sx={{ position: 'relative', mb: 2 }}>
-              <Avatar
-                src={userData?.avatar}
-                alt="Teacher"
-                sx={{
-                  width: 120,
-                  height: 120,
-                  bgcolor: '#4caf50',
-                  border: '3px solid #4caf50'
-                }}
-              />
-              <input
-                accept="image/*"
-                type="file"
-                id="dashboard-avatar-upload"
-                onChange={handleAvatarChange}
-                style={{ display: 'none' }}
-              />
-              <label htmlFor="dashboard-avatar-upload">
-                <IconButton
-                  component="span"
+      <Grid container spacing={3}>
+        {/* Left Side: Profile Card */}
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+              <Box sx={{ position: 'relative', mb: 2 }}>
+                <Avatar
+                  src={userData?.avatar}
+                  alt="Teacher"
                   sx={{
-                    position: 'absolute',
-                    right: 0,
-                    bottom: 0,
+                    width: 120,
+                    height: 120,
                     bgcolor: '#4caf50',
-                    color: 'white',
-                    '&:hover': { bgcolor: '#45a049' }
+                    border: '3px solid #4caf50'
                   }}
-                >
-                  <PhotoCameraIcon />
-                </IconButton>
-              </label>
-            </Box>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-              Teacher
-            </Typography>
-            {!editMode ? (
-              <Button
-                variant="outlined"
-                onClick={() => setEditMode(true)}
-                sx={{
-                  color: '#4caf50',
-                  borderColor: '#4caf50',
-                  '&:hover': {
-                    borderColor: '#45a049',
-                    bgcolor: 'rgba(76, 175, 80, 0.04)'
-                  }
-                }}
-              >
-                Edit Profile
-              </Button>
-            ) : (
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button
-                  variant="contained"
-                  onClick={handleSave}
-                  sx={{
-                    bgcolor: '#4caf50',
-                    '&:hover': { bgcolor: '#45a049' }
-                  }}
-                >
-                  Save
-                </Button>
+                />
+                <input
+                  accept="image/*"
+                  type="file"
+                  id="dashboard-avatar-upload"
+                  onChange={handleAvatarChange}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="dashboard-avatar-upload">
+                  <IconButton
+                    component="span"
+                    sx={{
+                      position: 'absolute',
+                      right: 0,
+                      bottom: 0,
+                      bgcolor: '#4caf50',
+                      color: 'white',
+                      '&:hover': { bgcolor: '#45a049' }
+                    }}
+                  >
+                    <PhotoCameraIcon />
+                  </IconButton>
+                </label>
+              </Box>
+              <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                Teacher
+              </Typography>
+              {!editMode ? (
                 <Button
                   variant="outlined"
-                  onClick={() => setEditMode(false)}
+                  onClick={() => setEditMode(true)}
                   sx={{
                     color: '#4caf50',
                     borderColor: '#4caf50',
@@ -377,225 +408,252 @@ const TeacherDashboard = () => {
                     }
                   }}
                 >
-                  Cancel
+                  Edit Profile
                 </Button>
-              </Box>
-            )}
-          </Box>
+              ) : (
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button
+                    variant="contained"
+                    onClick={handleSave}
+                    sx={{
+                      bgcolor: '#4caf50',
+                      '&:hover': { bgcolor: '#45a049' }
+                    }}
+                  >
+                    Save
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setEditMode(false)}
+                    sx={{
+                      color: '#4caf50',
+                      borderColor: '#4caf50',
+                      '&:hover': {
+                        borderColor: '#45a049',
+                        bgcolor: 'rgba(76, 175, 80, 0.04)'
+                      }
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              )}
+            </Box>
 
-          {/* Stats */}
-          <Grid container spacing={2}>
-            {stats.map((stat, index) => (
-              <Grid item xs={12} key={index}>
-                <Paper
+            {/* Stats */}
+            <Grid container spacing={2}>
+              {stats.map((stat, index) => (
+                <Grid item xs={12} key={index}>
+                  <Paper
+                    sx={{
+                      p: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      bgcolor: 'rgba(76, 175, 80, 0.04)',
+                      border: '1px solid #4caf50'
+                    }}
+                  >
+                    {stat.icon}
+                    <Box sx={{ ml: 2 }}>
+                      <Typography variant="h6" sx={{ color: '#2D5A27' }}>
+                        {stat.value}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {stat.title}
+                      </Typography>
+                    </Box>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          </Paper>
+        </Grid>
+
+        {/* Right Side: Schedule and Reminders */}
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" sx={{ color: '#2D5A27' }}>
+                Today's Schedule
+              </Typography>
+              <Button
+                variant="outlined"
+                startIcon={<CalendarTodayIcon />}
+                sx={{
+                  color: '#4caf50',
+                  borderColor: '#4caf50',
+                  '&:hover': {
+                    borderColor: '#45a049',
+                    bgcolor: 'rgba(76, 175, 80, 0.04)'
+                  }
+                }}
+              >
+                View Calendar
+              </Button>
+            </Box>
+
+            <List>
+              {classSchedule[selectedDate].map((classItem) => (
+                <ListItem
+                  key={classItem.id}
                   sx={{
+                    mb: 1,
                     p: 2,
-                    display: 'flex',
-                    alignItems: 'center',
                     bgcolor: 'rgba(76, 175, 80, 0.04)',
-                    border: '1px solid #4caf50'
+                    border: '1px solid #4caf50',
+                    borderRadius: 1
                   }}
                 >
-                  {stat.icon}
-                  <Box sx={{ ml: 2 }}>
-                    <Typography variant="h6" sx={{ color: '#2D5A27' }}>
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {stat.title}
-                    </Typography>
-                  </Box>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </Paper>
-      </Grid>
-
-      {/* Right Side: Schedule and Reminders */}
-      <Grid item xs={12} md={8}>
-        <Paper sx={{ p: 3, mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ color: '#2D5A27' }}>
-              Today's Schedule
-            </Typography>
-            <Button
-              variant="outlined"
-              startIcon={<CalendarTodayIcon />}
-              sx={{
-                color: '#4caf50',
-                borderColor: '#4caf50',
-                '&:hover': {
-                  borderColor: '#45a049',
-                  bgcolor: 'rgba(76, 175, 80, 0.04)'
-                }
-              }}
-            >
-              View Calendar
-            </Button>
-          </Box>
-
-          <List>
-            {classSchedule[selectedDate].map((classItem) => (
-              <ListItem
-                key={classItem.id}
-                sx={{
-                  mb: 1,
-                  p: 2,
-                  bgcolor: 'rgba(76, 175, 80, 0.04)',
-                  border: '1px solid #4caf50',
-                  borderRadius: 1
-                }}
-              >
-                <ListItemIcon>
-                  <EventIcon sx={{ color: getStatusColor(classItem.status) }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={
-                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Typography variant="subtitle1" sx={{ color: '#2D5A27', mr: 1 }}>
-                        {classItem.course.type}
-                      </Typography>
-                      <Chip
-                        label={getStatusLabel(classItem.status)}
-                        size="small"
-                        sx={{
-                          bgcolor: getStatusColor(classItem.status),
-                          color: 'white'
-                        }}
-                      />
-                    </Box>
-                  }
-                  secondary={
-                    <>
-                      <Typography variant="body2" color="text.secondary">
-                        {classItem.time} - {classItem.student.name} ({classItem.student.level})
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Topic: {classItem.course.topic}
-                      </Typography>
-                    </>
-                  }
-                />
-                <IconButton
-                  onClick={() => setSelectedClass(classItem)}
-                  sx={{ color: '#4caf50' }}
-                >
-                  <InfoIcon />
-                </IconButton>
-              </ListItem>
-            ))}
-          </List>
-
-          {/* Course Details Dialog */}
-          {selectedClass && (
-            <Paper
-              sx={{
-                mt: 2,
-                p: 3,
-                bgcolor: 'rgba(76, 175, 80, 0.04)',
-                border: '1px solid #4caf50'
-              }}
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" sx={{ color: '#2D5A27' }}>
-                  Course Details
-                </Typography>
-                <IconButton onClick={() => setSelectedClass(null)} size="small">
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle1" sx={{ color: '#2D5A27', mb: 1 }}>
-                    Student Information
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 0.5 }}>
-                    Name: {selectedClass.student.name}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 0.5 }}>
-                    Level: {selectedClass.student.level}
-                  </Typography>
-                  <Typography variant="body2">
-                    Age: {selectedClass.student.age} years
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                  <Typography variant="subtitle1" sx={{ color: '#2D5A27', mb: 1 }}>
-                    Course Information
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 0.5 }}>
-                    Type: {selectedClass.course.type}
-                  </Typography>
-                  <Typography variant="body2" sx={{ mb: 0.5 }}>
-                    Topic: {selectedClass.course.topic}
-                  </Typography>
-                  <Typography variant="body2">
-                    Materials: {selectedClass.course.materials}
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Typography variant="subtitle1" sx={{ color: '#2D5A27', mb: 1 }}>
-                    Learning Objectives
-                  </Typography>
-                  <List dense>
-                    {selectedClass.course.objectives.map((objective, index) => (
-                      <ListItem key={index} sx={{ py: 0 }}>
-                        <ListItemIcon sx={{ minWidth: '32px' }}>
-                          <ArrowForwardIcon sx={{ color: '#4caf50', fontSize: '0.8rem' }} />
-                        </ListItemIcon>
-                        <ListItemText 
-                          primary={objective}
-                          sx={{ m: 0 }}
+                  <ListItemIcon>
+                    <EventIcon sx={{ color: getStatusColor(classItem.status) }} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant="subtitle1" sx={{ color: '#2D5A27', mr: 1 }}>
+                          {classItem.course.type}
+                        </Typography>
+                        <Chip
+                          label={getStatusLabel(classItem.status)}
+                          size="small"
+                          sx={{
+                            bgcolor: getStatusColor(classItem.status),
+                            color: 'white'
+                          }}
                         />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-              </Grid>
-            </Paper>
-          )}
-        </Paper>
+                      </Box>
+                    }
+                    secondary={
+                      <>
+                        <Typography variant="body2" color="text.secondary">
+                          {classItem.time} - {classItem.student.name} ({classItem.student.level})
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Topic: {classItem.course.topic}
+                        </Typography>
+                      </>
+                    }
+                  />
+                  <IconButton
+                    onClick={() => setSelectedClass(classItem)}
+                    sx={{ color: '#4caf50' }}
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                </ListItem>
+              ))}
+            </List>
 
-        {/* Recent Notifications */}
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ color: '#2D5A27', mb: 2 }}>
-            Recent Notifications
-          </Typography>
-          <List>
-            {notifications.map((notification) => (
-              <ListItem
-                key={notification.id}
+            {/* Course Details Dialog */}
+            {selectedClass && (
+              <Paper
                 sx={{
-                  mb: 1,
-                  p: 2,
+                  mt: 2,
+                  p: 3,
                   bgcolor: 'rgba(76, 175, 80, 0.04)',
-                  border: '1px solid #4caf50',
-                  borderRadius: 1
+                  border: '1px solid #4caf50'
                 }}
               >
-                <ListItemIcon>
-                  {notification.type === 'class' ? (
-                    <ClassIcon sx={{ color: '#4caf50' }} />
-                  ) : notification.type === 'assignment' ? (
-                    <AssignmentIcon sx={{ color: '#4caf50' }} />
-                  ) : (
-                    <StarIcon sx={{ color: '#4caf50' }} />
-                  )}
-                </ListItemIcon>
-                <ListItemText
-                  primary={notification.title}
-                  secondary={`${notification.time} - ${notification.student}`}
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Paper>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="h6" sx={{ color: '#2D5A27' }}>
+                    Course Details
+                  </Typography>
+                  <IconButton onClick={() => setSelectedClass(null)} size="small">
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+
+                <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="subtitle1" sx={{ color: '#2D5A27', mb: 1 }}>
+                      Student Information
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      Name: {selectedClass.student.name}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      Level: {selectedClass.student.level}
+                    </Typography>
+                    <Typography variant="body2">
+                      Age: {selectedClass.student.age} years
+                    </Typography>
+                  </Grid>
+
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="subtitle1" sx={{ color: '#2D5A27', mb: 1 }}>
+                      Course Information
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      Type: {selectedClass.course.type}
+                    </Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5 }}>
+                      Topic: {selectedClass.course.topic}
+                    </Typography>
+                    <Typography variant="body2">
+                      Materials: {selectedClass.course.materials}
+                    </Typography>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Typography variant="subtitle1" sx={{ color: '#2D5A27', mb: 1 }}>
+                      Learning Objectives
+                    </Typography>
+                    <List dense>
+                      {selectedClass.course.objectives.map((objective, index) => (
+                        <ListItem key={index} sx={{ py: 0 }}>
+                          <ListItemIcon sx={{ minWidth: '32px' }}>
+                            <ArrowForwardIcon sx={{ color: '#4caf50', fontSize: '0.8rem' }} />
+                          </ListItemIcon>
+                          <ListItemText 
+                            primary={objective}
+                            sx={{ m: 0 }}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Grid>
+                </Grid>
+              </Paper>
+            )}
+          </Paper>
+
+          {/* Recent Notifications */}
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ color: '#2D5A27', mb: 2 }}>
+              Recent Notifications
+            </Typography>
+            <List>
+              {notifications.map((notification) => (
+                <ListItem
+                  key={notification.id}
+                  sx={{
+                    mb: 1,
+                    p: 2,
+                    bgcolor: 'rgba(76, 175, 80, 0.04)',
+                    border: '1px solid #4caf50',
+                    borderRadius: 1
+                  }}
+                >
+                  <ListItemIcon>
+                    {notification.type === 'class' ? (
+                      <ClassIcon sx={{ color: '#4caf50' }} />
+                    ) : notification.type === 'assignment' ? (
+                      <AssignmentIcon sx={{ color: '#4caf50' }} />
+                    ) : (
+                      <StarIcon sx={{ color: '#4caf50' }} />
+                    )}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={notification.title}
+                    secondary={`${notification.time} - ${notification.student}`}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Paper>
+        </Grid>
       </Grid>
-    </Grid>
+    </Box>
   );
 };
 

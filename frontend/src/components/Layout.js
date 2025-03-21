@@ -73,7 +73,6 @@ const Layout = () => {
   // Student menu items
   const studentMenuItems = [
     ...baseMenuItems,
-    { text: 'Learning Center', icon: <SchoolIcon />, path: '/student/dashboard' },
     { text: 'Profile', icon: <PersonIcon />, path: '/student/profile' },
   ];
 

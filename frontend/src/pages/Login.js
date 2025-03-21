@@ -52,7 +52,7 @@ const Login = () => {
       // 根据用户角色重定向
       switch (response.user.role) {
         case 'student':
-          navigate('/student/dashboard');
+          navigate('/student/profile');
           break;
         case 'teacher':
           navigate('/teacher/dashboard');
