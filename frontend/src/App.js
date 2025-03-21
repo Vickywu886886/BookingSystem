@@ -8,6 +8,7 @@ import TeacherLayout from './components/TeacherLayout';
 import Home from './pages/Home';
 import Courses from './pages/Courses';
 import StudentProfile from './pages/StudentProfile';
+import Onboarding from './pages/Onboarding';
 
 // 导入教师端页面
 import TeacherDashboard from './pages/teacher/Dashboard';
@@ -58,13 +59,25 @@ function App() {
           {/* 学生端路由 */}
           <Route
             path="/student"
-            element={<Navigate to="/student/profile" replace />}
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <Home />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/student/profile"
             element={
               <ProtectedRoute allowedRoles={['student']}>
                 <StudentProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/onboarding"
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <Onboarding />
               </ProtectedRoute>
             }
           />

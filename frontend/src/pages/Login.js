@@ -52,7 +52,13 @@ const Login = () => {
       // 根据用户角色重定向
       switch (response.user.role) {
         case 'student':
-          navigate('/student/profile');
+          // 检查是否是首次登录
+          const isFirstLogin = !localStorage.getItem('hasCompletedOnboarding');
+          if (isFirstLogin) {
+            navigate('/onboarding');
+          } else {
+            navigate('/student');
+          }
           break;
         case 'teacher':
           navigate('/teacher/dashboard');
