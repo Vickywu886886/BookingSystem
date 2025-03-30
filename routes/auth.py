@@ -1,14 +1,9 @@
 from flask import Blueprint, request, jsonify
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
 from flask_jwt_extended import create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from models.user import User
 from extensions import db
 from flask_jwt_extended import jwt_required
-<<<<<<< HEAD
 from datetime import timedelta
 from flask_cors import cross_origin
 import logging
@@ -16,14 +11,6 @@ import logging
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-=======
-=======
-from flask_jwt_extended import create_access_token
-from werkzeug.security import generate_password_hash, check_password_hash
-from models.user import User
-from extensions import db
->>>>>>> 417a01e2b58f8c81056a4604f9083ae808e8bcfc
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -68,7 +55,6 @@ def register():
         db.session.rollback()
         return jsonify({"message": "Registration failed"}), 500
 
-<<<<<<< HEAD
 @auth_bp.route('/login', methods=['POST', 'OPTIONS'])
 @cross_origin(supports_credentials=True, origins="http://localhost:3000")
 def login():
@@ -112,31 +98,6 @@ def login():
     except Exception as e:
         logger.error(f"Login error: {str(e)}")
         return jsonify({"message": "Server error"}), 500
-=======
-@auth_bp.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    
-    user = User.query.filter_by(email=data['email']).first()
-    
-    if not user or not check_password_hash(user.password, data['password']):
-        return jsonify({"message": "Invalid email or password"}), 401
-    
-    access_token = create_access_token(identity=user.id)
-    
-    return jsonify({
-        "message": "Login successful",
-        "token": access_token,
-        "user": {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-<<<<<<< HEAD
-            "role": user.role,
-            "avatar": user.avatar or "https://randomuser.me/api/portraits/men/1.jpg"
-        }
-    }), 200
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
 
 @auth_bp.route('/update-avatar', methods=['POST'])
 @jwt_required()
@@ -162,11 +123,5 @@ def update_avatar():
             "email": user.email,
             "role": user.role,
             "avatar": user.avatar
-<<<<<<< HEAD
-=======
-=======
-            "role": user.role
->>>>>>> 417a01e2b58f8c81056a4604f9083ae808e8bcfc
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
         }
     }), 200 

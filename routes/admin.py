@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.user import User
@@ -104,13 +103,6 @@ def delete_user(user_id):
         db.session.rollback()
         return jsonify({"message": "Failed to delete user"}), 500
 
-=======
-from flask import Blueprint, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
-
-admin_bp = Blueprint('admin', __name__)
-
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
 @admin_bp.route('/dashboard', methods=['GET'])
 @jwt_required()
 def get_dashboard():

@@ -4,7 +4,6 @@ const API_URL = 'http://localhost:5001/api';
 
 export const login = async (credentials) => {
   try {
-<<<<<<< HEAD
     const response = await axios.post(`${API_URL}/auth/login`, credentials, {
       headers: {
         'Content-Type': 'application/json'
@@ -31,12 +30,6 @@ export const login = async (credentials) => {
     } else {
       throw new Error('请求配置错误');
     }
-=======
-    const response = await axios.post(`${API_URL}/auth/login`, credentials);
-    return response.data;
-  } catch (error) {
-    throw error;
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
   }
 };
 
@@ -77,8 +70,4 @@ export const logout = () => {
 export const getCurrentUser = () => {
   const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
-<<<<<<< HEAD
 };
-=======
-}; 
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7

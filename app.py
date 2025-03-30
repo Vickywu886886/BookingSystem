@@ -1,17 +1,9 @@
-<<<<<<< HEAD
 from flask import Flask, jsonify, request, make_response
 from extensions import db, jwt, migrate
 from datetime import timedelta, datetime
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
-=======
-from flask import Flask, jsonify
-from extensions import db, jwt, cors, migrate
-from datetime import timedelta, datetime
-import os
-from dotenv import load_dotenv
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
 
 # Load environment variables
 load_dotenv()
@@ -32,17 +24,7 @@ jwt.init_app(app)
 migrate.init_app(app, db)
 
 # Configure CORS
-<<<<<<< HEAD
 CORS(app, origins="http://localhost:3000", supports_credentials=True)
-=======
-cors.init_app(app, resources={
-    r"/api/*": {
-        "origins": ["http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://localhost:3003"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
 
 # Import models
 from models.user import User
@@ -68,7 +50,6 @@ def index():
 
 # Create database tables and add default teacher
 with app.app_context():
-<<<<<<< HEAD
     print("Creating database tables...")
     db.drop_all()  # Drop all existing tables
     db.create_all()  # Create tables with current schema
@@ -130,22 +111,3 @@ with app.app_context():
 if __name__ == '__main__':
     print("Starting server...")
     app.run(debug=True, host='localhost', port=5001)
-=======
-    db.create_all()
-    # Check if default teacher exists
-    default_teacher = User.query.filter_by(email='teacher1@example.com').first()
-    if not default_teacher:
-        teacher = User(
-            username='teacher1',
-            email='teacher1@example.com',
-            role='teacher',
-            created_at=datetime.utcnow()
-        )
-        teacher.set_password('password123')
-        db.session.add(teacher)
-        db.session.commit()
-        print('Default teacher account created successfully!')
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5001)
->>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
