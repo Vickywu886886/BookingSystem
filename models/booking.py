@@ -21,13 +21,50 @@ class Booking(db.Model):
         return f'<Booking {self.id}>'
 
     def to_dict(self):
-        return {
-            'id': self.id,
-            'student_id': self.student_id,
-            'course_id': self.course_id,
-            'schedule_id': self.schedule_id,
-            'status': self.status,
-            'payment_status': self.payment_status,
-            'created_at': self.created_at.isoformat(),
-            'updated_at': self.updated_at.isoformat()
-        } 
+        try:
+            schedule_data = {
+                'id': self.schedule.id,
+                'start_time': self.schedule.start_time.isoformat(),
+                'end_time': self.schedule.end_time.isoformat(),
+                'is_available': self.schedule.is_available
+            } if self.schedule else None
+
+            course_data = None
+            if self.schedule and self.schedule.course:
+                course_data = {
+                    'id': self.schedule.course.id,
+                    'title': self.schedule.course.title,
+                    'description': self.schedule.course.description,
+                    'teacher': {
+                        'id': self.schedule.course.teacher.id,
+                        'username': self.schedule.course.teacher.username,
+                        'avatar': self.schedule.course.teacher.avatar
+                    } if self.schedule.course.teacher else None
+                }
+
+            return {
+                'id': self.id,
+                'student_id': self.student_id,
+                'course_id': self.course_id,
+                'schedule_id': self.schedule_id,
+                'status': self.status,
+                'payment_status': self.payment_status,
+                'created_at': self.created_at.isoformat(),
+                'updated_at': self.updated_at.isoformat(),
+                'schedule': schedule_data,
+                'course': course_data
+            }
+        except Exception as e:
+            print(f"Error in to_dict: {str(e)}")
+            return {
+                'id': self.id,
+                'student_id': self.student_id,
+                'course_id': self.course_id,
+                'schedule_id': self.schedule_id,
+                'status': self.status,
+                'payment_status': self.payment_status,
+                'created_at': self.created_at.isoformat(),
+                'updated_at': self.updated_at.isoformat(),
+                'schedule': None,
+                'course': None
+            } 

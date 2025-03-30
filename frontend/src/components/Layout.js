@@ -5,7 +5,17 @@ import {
   Toolbar,
   Container,
   Button,
-  Typography
+  Typography,
+  BottomNavigation,
+  BottomNavigationAction,
+  Paper,
+  Avatar,
+  IconButton,
+  Badge,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 } from '@mui/material';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import HomeIcon from '@mui/icons-material/Home';
@@ -14,11 +24,16 @@ import PersonIcon from '@mui/icons-material/Person';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import CalendarIcon from '@mui/icons-material/CalendarToday';
 import LoginIcon from '@mui/icons-material/Login';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import LogoutIcon from '@mui/icons-material/Logout';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userData, setUserData] = useState(null);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   // Check if on login page
   const isLoginPage = location.pathname === '/login';
@@ -29,6 +44,9 @@ const Layout = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       if (JSON.stringify(user) !== JSON.stringify(userData)) {
         setUserData(user);
+        if (user) {
+          setNotificationCount(3); // Example count
+        }
       }
     };
 
@@ -43,6 +61,9 @@ const Layout = () => {
       if (e.key === 'user') {
         const user = JSON.parse(e.newValue);
         setUserData(user);
+        if (user) {
+          setNotificationCount(3); // Example count
+        }
       }
     };
     window.addEventListener('storage', handleStorageChange);
@@ -52,6 +73,19 @@ const Layout = () => {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, [userData]);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   // If on login page, return content directly without navigation bar
   if (isLoginPage) {
@@ -88,108 +122,123 @@ const Layout = () => {
   // Choose menu items based on user role
   const menuItems = userData ? (
     userData.role === 'admin' ? adminMenuItems :
-    userData.role === 'teacher' ? teacherMenuItems : 
-    studentMenuItems
+      userData.role === 'teacher' ? teacherMenuItems :
+        studentMenuItems
   ) : baseMenuItems;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      <AppBar position="fixed" sx={{ backgroundColor: 'white', color: '#2e7d32', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+        <Toolbar sx={{ justifyContent: 'flex-end', minHeight: '56px' }}>
+          {userData && (
+            <>
+              <IconButton
+                size="medium"
+                sx={{
+                  color: '#2e7d32',
+                  mr: 1.5,
+                  '&:hover': {
+                    backgroundColor: 'rgba(46, 125, 50, 0.08)'
+                  }
+                }}
+              >
+                <Badge
+                  badgeContent={notificationCount}
+                  color="error"
+                  sx={{
+                    '& .MuiBadge-badge': {
+                      backgroundColor: '#ff4444',
+                      fontSize: '0.8rem',
+                      minWidth: '20px',
+                      height: '20px',
+                      padding: 0
+                    }
+                  }}
+                >
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+              <Avatar
+                src={userData.avatar}
+                alt={userData.username}
+                onClick={handleMenuOpen}
+                sx={{
+                  width: 36,
+                  height: 36,
+                  border: '2px solid #4caf50',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    opacity: 0.8
+                  }
+                }}
+              />
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                onClick={handleMenuClose}
+                PaperProps={{
+                  sx: {
+                    mt: 1.5,
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                    borderRadius: '8px',
+                    minWidth: 200
+                  }
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              >
+                <MenuItem onClick={() => navigate('/student/bookings')}>
+                  <ListItemIcon>
+                    <CalendarTodayIcon fontSize="small" sx={{ color: '#2e7d32' }} />
+                  </ListItemIcon>
+                  <ListItemText>我的预约</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleLogout} sx={{ color: '#d32f2f' }}>
+                  <ListItemIcon>
+                    <LogoutIcon fontSize="small" sx={{ color: '#d32f2f' }} />
+                  </ListItemIcon>
+                  <ListItemText>Logout</ListItemText>
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+        </Toolbar>
+      </AppBar>
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           width: '100%',
-          mb: '64px' // Leave space for bottom navigation bar
+          pt: '56px', // Add padding for the top app bar
+          pb: { xs: '56px', sm: '64px' } // Add padding for the bottom navigation bar
         }}
       >
         <Outlet />
       </Box>
-      <AppBar 
-        position="fixed" 
-        elevation={0}
-        sx={{ 
-          top: 'auto',
-          bottom: 0,
-          bgcolor: 'white',
-          boxShadow: 'none',
-          borderTop: '1px solid rgba(0, 0, 0, 0.1)',
-          height: '64px',
-          display: 'flex',
-          justifyContent: 'center'
-        }}
-      >
-        <Container maxWidth="xl">
-          <Toolbar 
-            disableGutters 
-            sx={{ 
-              minHeight: '64px',
-              display: 'flex',
-              justifyContent: 'space-around',
-              alignItems: 'center'
+      {userData && (
+        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+          <BottomNavigation
+            value={location.pathname}
+            onChange={(event, newValue) => {
+              const selectedItem = menuItems.find(item => item.path === newValue);
+              if (selectedItem) {
+                navigate(selectedItem.path);
+              }
             }}
+            showLabels
           >
-            {menuItems.map((item, index) => (
-              <Button
-                key={index}
-                onClick={() => navigate(item.path)}
-                sx={{
-                  color: location.pathname === item.path ? '#4caf50' : '#666',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  minWidth: 'auto',
-                  padding: '8px',
-                  '&:hover': {
-                    bgcolor: 'transparent',
-                    color: '#4caf50'
-                  }
-                }}
-              >
-                {item.icon}
-                <Typography
-                  variant="caption"
-                  sx={{
-                    marginTop: '4px',
-                    fontSize: '12px',
-                    fontWeight: location.pathname === item.path ? 600 : 400
-                  }}
-                >
-                  {item.text}
-                </Typography>
-              </Button>
+            {menuItems.map((item) => (
+              <BottomNavigationAction
+                key={item.path}
+                label={item.text}
+                value={item.path}
+                icon={item.icon}
+              />
             ))}
-            {!userData && (
-              <Button
-                onClick={() => navigate('/login')}
-                sx={{
-                  color: '#666',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  minWidth: 'auto',
-                  padding: '8px',
-                  '&:hover': {
-                    bgcolor: 'transparent',
-                    color: '#4caf50'
-                  }
-                }}
-              >
-                <LoginIcon />
-                <Typography
-                  variant="caption"
-                  sx={{
-                    marginTop: '4px',
-                    fontSize: '12px',
-                    fontWeight: location.pathname === '/login' ? 600 : 400
-                  }}
-                >
-                  登录
-                </Typography>
-              </Button>
-            )}
-          </Toolbar>
-        </Container>
-      </AppBar>
+          </BottomNavigation>
+        </Paper>
+      )}
     </Box>
   );
 };

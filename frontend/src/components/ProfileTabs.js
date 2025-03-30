@@ -30,51 +30,59 @@ import {
 
 // Bookings Tab Panel
 export const BookingsPanel = ({ bookings, onCancelBooking }) => (
-  <List>
-    {bookings.map((booking) => (
-      <Paper
-        key={booking.id}
-        elevation={1}
-        sx={{ mb: 2, p: 2, borderRadius: 2 }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h6">
-              {booking.courseType}课
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              教师：{booking.teacherName}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              时间：{booking.date} {booking.time}
-            </Typography>
-          </Box>
-          <Chip
-            label={
-              booking.status === 'confirmed' ? '已确认' :
-              booking.status === 'pending' ? '待确认' : '已取消'
-            }
-            color={
-              booking.status === 'confirmed' ? 'success' :
-              booking.status === 'pending' ? 'warning' : 'error'
-            }
-            size="small"
-          />
-        </Box>
-        {booking.status !== 'cancelled' && (
-          <Button
-            variant="outlined"
-            color="error"
-            size="small"
-            onClick={() => onCancelBooking(booking.id)}
-            sx={{ mt: 1 }}
+  <Box>
+    {bookings.length === 0 ? (
+      <Typography variant="body1" color="text.secondary" align="center">
+        暂无预约记录
+      </Typography>
+    ) : (
+      <List>
+        {bookings.map((booking) => (
+          <Paper
+            key={booking.id}
+            elevation={1}
+            sx={{ mb: 2, p: 2, borderRadius: 2 }}
           >
-            取消预约
-          </Button>
-        )}
-      </Paper>
-    ))}
-  </List>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6">
+                  {booking.courseType}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  教师：{booking.teacherName}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  时间：{booking.date} {booking.time}
+                </Typography>
+              </Box>
+              <Chip
+                label={
+                  booking.status === 'confirmed' ? '已确认' :
+                    booking.status === 'pending' ? '待确认' : '已取消'
+                }
+                color={
+                  booking.status === 'confirmed' ? 'success' :
+                    booking.status === 'pending' ? 'warning' : 'error'
+                }
+                size="small"
+              />
+            </Box>
+            {booking.status === 'pending' && (
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                onClick={() => onCancelBooking(booking.id)}
+                sx={{ mt: 1 }}
+              >
+                取消预约
+              </Button>
+            )}
+          </Paper>
+        ))}
+      </List>
+    )}
+  </Box>
 );
 
 // Learning Materials Tab Panel
@@ -97,7 +105,7 @@ export const MaterialsPanel = ({ materials, homework }) => (
           >
             <ListItemIcon>
               {material.type === 'vocabulary' ? <Book /> :
-               material.type === 'audio' ? <Grade /> : <Assignment />}
+                material.type === 'audio' ? <Grade /> : <Assignment />}
             </ListItemIcon>
             <ListItemText
               primary={material.title}

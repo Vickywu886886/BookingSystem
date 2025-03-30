@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Grid,
@@ -74,6 +74,7 @@ import {
   LocalOffer,
   Timer,
   Remove,
+  Event,
 } from '@mui/icons-material';
 import {
   BookingsPanel,
@@ -82,6 +83,7 @@ import {
   NotificationsPanel,
   AccountPanel,
 } from '../components/ProfileTabs';
+import { getMyBookings, cancelBooking } from '../services/studentApi';
 
 // Styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -117,6 +119,8 @@ const Profile = () => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openPasswordDialog, setOpenPasswordDialog] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Mock data - In a real app, this would come from an API
   const [personalInfo, setPersonalInfo] = useState({
@@ -194,24 +198,52 @@ const Profile = () => {
     },
   ]);
 
-  const [bookings] = useState([
-    {
-      id: 1,
-      courseType: '英语口语',
-      teacher: '李老师',
-      date: '2024-03-20',
-      time: '14:00-15:00',
-      status: 'confirmed',
-    },
-    {
-      id: 2,
-      courseType: '阅读理解',
-      teacher: '王老师',
-      date: '2024-03-22',
-      time: '15:00-16:00',
-      status: 'pending',
-    },
-  ]);
+  // 获取预约列表
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      const data = await getMyBookings();
+      console.log('Fetched bookings:', data);
+      setBookings(data);
+    } catch (error) {
+      console.error('获取预约列表失败:', error);
+      setSnackbar({
+        open: true,
+        message: '获取预约列表失败',
+        severity: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 取消预约
+  const handleCancelBooking = async (bookingId) => {
+    try {
+      await cancelBooking(bookingId);
+      setSnackbar({
+        open: true,
+        message: '预约已取消',
+        severity: 'success'
+      });
+      // 重新获取预约列表
+      fetchBookings();
+    } catch (error) {
+      console.error('取消预约失败:', error);
+      setSnackbar({
+        open: true,
+        message: '取消预约失败',
+        severity: 'error'
+      });
+    }
+  };
+
+  // 当切换到"我的预约"标签页时获取数据
+  useEffect(() => {
+    if (value === 3) { // 3 是"我的预约"标签页的新索引
+      fetchBookings();
+    }
+  }, [value]);
 
   const [materials] = useState([
     {
@@ -296,15 +328,6 @@ const Profile = () => {
     });
   };
 
-  const handleCancelBooking = (bookingId) => {
-    // Handle booking cancellation
-    setSnackbar({
-      open: true,
-      message: '预约已取消',
-      severity: 'info',
-    });
-  };
-
   const handleNotificationRead = (notificationId) => {
     // Handle marking notification as read
     setSnackbar({
@@ -316,330 +339,62 @@ const Profile = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Grid container spacing={3}>
-        {/* Profile Header */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item>
-                  <Avatar
-                    src={personalInfo.avatar}
-                    sx={{ width: 100, height: 100 }}
-                  />
-                </Grid>
-                <Grid item xs>
-                  <Typography variant="h5">{personalInfo.name}</Typography>
-                  <Typography color="text.secondary">
-                    {personalInfo.age}岁 | {personalInfo.grade}
-                  </Typography>
-                  <Typography variant="body2">
-                    当前教材：{personalInfo.currentTextbook}
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <Button variant="contained" onClick={handleEditProfile}>
-                    编辑资料
-                  </Button>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid>
+      <Paper sx={{ p: 3 }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs
+            value={value}
+            onChange={(e, newValue) => setValue(newValue)}
+            aria-label="profile tabs"
+          >
+            <Tab label="个人信息" />
+            <Tab label="学习资料" />
+            <Tab label="课程反馈" />
+            <Tab label="我的预约" />
+            <Tab label="通知中心" />
+          </Tabs>
+        </Box>
 
-        {/* Course Hours and Points */}
-        <Grid item xs={12} md={6}>
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                课时信息
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={4}>
-                  <Box textAlign="center">
-                    <Typography variant="h4" color="primary">
-                      {courseInfo.totalHours}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      总课时
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={4}>
-                  <Box textAlign="center">
-                    <Typography variant="h4" color="success.main">
-                      {courseInfo.usedHours}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      已用课时
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={4}>
-                  <Box textAlign="center">
-                    <Typography variant="h4" color="warning.main">
-                      {courseInfo.remainingHours}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      剩余课时
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </StyledCard>
-        </Grid>
+        <TabPanel value={value} index={0}>
+          {/* 个人信息面板 */}
+          <AccountPanel onEditProfile={() => setOpenEditDialog(true)} onChangePassword={() => setOpenPasswordDialog(true)} />
+        </TabPanel>
 
-        <Grid item xs={12} md={6}>
-          <StyledCard>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                积分信息
-              </Typography>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  <Box textAlign="center">
-                    <Typography variant="h4" color="primary">
-                      {courseInfo.points.total}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      总积分
-                    </Typography>
-                  </Box>
-                </Grid>
-                <Grid item xs={6}>
-                  <Box textAlign="center">
-                    <Typography variant="h4" color="success.main">
-                      {courseInfo.points.available}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      可用积分
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="subtitle2" gutterBottom>
-                积分记录
-              </Typography>
-              <List>
-                {courseInfo.points.history.map((record) => (
-                  <React.Fragment key={record.id}>
-                    <ListItem>
-                      <ListItemIcon>
-                        {record.type === 'earn' ? (
-                          <Add color="success" />
-                        ) : (
-                          <Remove color="error" />
-                        )}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={record.description}
-                        secondary={
-                          <>
-                            <Typography component="span" variant="body2">
-                              {record.type === 'earn' ? '+' : ''}{record.amount} 积分
-                            </Typography>
-                            <br />
-                            <Typography component="span" variant="body2" color="text.secondary">
-                              {record.date}
-                            </Typography>
-                          </>
-                        }
-                      />
-                    </ListItem>
-                    <Divider />
-                  </React.Fragment>
-                ))}
-              </List>
-            </CardContent>
-          </StyledCard>
-        </Grid>
+        <TabPanel value={value} index={1}>
+          {/* 学习资料面板 */}
+          <MaterialsPanel materials={materials} homework={[]} />
+        </TabPanel>
 
-        {/* Tabs */}
-        <Grid item xs={12}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={value} onChange={handleTabChange} aria-label="profile tabs">
-              <Tab label="我的课表" />
-              <Tab label="预约记录" />
-              <Tab label="学习资料" />
-              <Tab label="学习反馈" />
-              <Tab label="消息通知" />
-              <Tab label="账户管理" />
-            </Tabs>
-          </Box>
+        <TabPanel value={value} index={2}>
+          {/* 课程反馈面板 */}
+          <FeedbackPanel feedback={feedback} />
+        </TabPanel>
 
-          <TabPanel value={value} index={0}>
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  今日课程
-                </Typography>
-                <Grid container spacing={2}>
-                  {schedule
-                    .filter(class_ => class_.date === new Date().toISOString().split('T')[0])
-                    .map(class_ => (
-                      <Grid item xs={12} key={class_.id}>
-                        <Paper sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <Box>
-                            <Typography variant="subtitle1" gutterBottom>
-                              {class_.time} - {class_.courseType}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {class_.teacher}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                            {class_.status === 'confirmed' && (
-                              <>
-                                <Typography variant="body2" color="text.secondary">
-                                  教室号：{class_.classroomId}
-                                </Typography>
-                                <Button
-                                  variant="contained"
-                                  size="small"
-                                  startIcon={<VideoCall />}
-                                  href={class_.classInLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  进入教室
-                                </Button>
-                              </>
-                            )}
-                            <Chip
-                              label={class_.status === 'confirmed' ? '已确认' : '待确认'}
-                              color={class_.status === 'confirmed' ? 'success' : 'warning'}
-                            />
-                          </Box>
-                        </Paper>
-                      </Grid>
-                    ))}
-                  {schedule.filter(class_ => class_.date === new Date().toISOString().split('T')[0]).length === 0 && (
-                    <Grid item xs={12}>
-                      <Paper sx={{ p: 2, textAlign: 'center' }}>
-                        <Typography color="text.secondary">
-                          今日暂无课程安排
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  )}
-                </Grid>
-                <Divider sx={{ my: 3 }} />
-                <Typography variant="h6" gutterBottom>
-                  本周课程安排
-                </Typography>
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>日期</TableCell>
-                        <TableCell>时间</TableCell>
-                        <TableCell>课程类型</TableCell>
-                        <TableCell>教师</TableCell>
-                        <TableCell>状态</TableCell>
-                        <TableCell>教室信息</TableCell>
-                        <TableCell>操作</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {schedule.map((class_) => (
-                        <TableRow key={class_.id}>
-                          <TableCell>{class_.date}</TableCell>
-                          <TableCell>{class_.time}</TableCell>
-                          <TableCell>{class_.courseType}</TableCell>
-                          <TableCell>{class_.teacher}</TableCell>
-                          <TableCell>
-                            <Chip
-                              label={class_.status === 'confirmed' ? '已确认' : '待确认'}
-                              color={class_.status === 'confirmed' ? 'success' : 'warning'}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            {class_.status === 'confirmed' ? (
-                              <Box>
-                                <Typography variant="body2" color="text.secondary">
-                                  教室号：{class_.classroomId}
-                                </Typography>
-                                <Link
-                                  href={class_.classInLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  sx={{ display: 'block', mt: 0.5 }}
-                                >
-                                  点击进入ClassIn教室
-                                </Link>
-                              </Box>
-                            ) : (
-                              <Typography variant="body2" color="text.secondary">
-                                待确认
-                              </Typography>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {class_.status === 'confirmed' ? (
-                              <Button
-                                variant="contained"
-                                size="small"
-                                startIcon={<VideoCall />}
-                                href={class_.classInLink}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                              >
-                                进入教室
-                              </Button>
-                            ) : (
-                              <Button
-                                variant="outlined"
-                                size="small"
-                                disabled
-                              >
-                                等待确认
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>
-            </Card>
-          </TabPanel>
-
-          <TabPanel value={value} index={1}>
+        <TabPanel value={value} index={3}>
+          {/* 我的预约面板 */}
+          {loading ? (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+              <CircularProgress />
+            </Box>
+          ) : (
             <BookingsPanel
-              bookings={bookings}
+              bookings={bookings.map(booking => ({
+                id: booking.id,
+                courseType: booking.course.title,
+                teacherName: booking.course.teacher.username,
+                date: new Date(booking.schedule.start_time).toLocaleDateString(),
+                time: `${new Date(booking.schedule.start_time).toLocaleTimeString()} - ${new Date(booking.schedule.end_time).toLocaleTimeString()}`,
+                status: booking.status
+              }))}
               onCancelBooking={handleCancelBooking}
             />
-          </TabPanel>
+          )}
+        </TabPanel>
 
-          <TabPanel value={value} index={2}>
-            <MaterialsPanel
-              materials={materials}
-              homework={schedule}
-            />
-          </TabPanel>
-
-          <TabPanel value={value} index={3}>
-            <FeedbackPanel feedback={feedback} />
-          </TabPanel>
-
-          <TabPanel value={value} index={4}>
-            <NotificationsPanel
-              notifications={notifications}
-              onNotificationRead={handleNotificationRead}
-            />
-          </TabPanel>
-
-          <TabPanel value={value} index={5}>
-            <AccountPanel
-              onEditProfile={handleEditProfile}
-              onChangePassword={handleChangePassword}
-            />
-          </TabPanel>
-        </Grid>
-      </Grid>
+        <TabPanel value={value} index={4}>
+          {/* 通知中心面板 */}
+          <NotificationsPanel notifications={[]} onNotificationRead={() => { }} />
+        </TabPanel>
+      </Paper>
 
       {/* Edit Profile Dialog */}
       <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>

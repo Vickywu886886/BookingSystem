@@ -15,7 +15,7 @@ class Course(db.Model):
     
     # Relationships
     teacher = db.relationship('User', backref=db.backref('courses', lazy=True))
-    schedules = db.relationship('Schedule', backref='course', lazy=True)
+    schedules = db.relationship('Schedule', back_populates='course', lazy=True)
     bookings = db.relationship('Booking', backref='course', lazy=True)
     
     def __repr__(self):

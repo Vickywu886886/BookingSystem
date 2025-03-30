@@ -77,9 +77,8 @@ import {
   TrendingUp as TrendingUpIcon,
   History as HistoryIcon
 } from '@mui/icons-material';
-import StudentNav from '../components/StudentNav';
-import { updateAvatar } from '../services/authApi';
 import { useNavigate } from 'react-router-dom';
+import { updateAvatar } from '../services/authApi';
 
 // 添加主题颜色常量
 const theme = {
@@ -632,17 +631,17 @@ const StudentProfile = () => {
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
                 <Box>
-                  <Chip 
-                    label={course.level} 
-                    color="primary" 
-                    size="small" 
-                    sx={{ mr: 1, bgcolor: theme.primary }} 
+                  <Chip
+                    label={course.level}
+                    color="primary"
+                    size="small"
+                    sx={{ mr: 1, bgcolor: theme.primary }}
                   />
-                  <Chip 
-                    label={`剩余${course.spots}个名额`} 
-                    color="secondary" 
-                    size="small" 
-                    sx={{ bgcolor: theme.secondary, color: theme.text.secondary }} 
+                  <Chip
+                    label={`剩余${course.spots}个名额`}
+                    color="secondary"
+                    size="small"
+                    sx={{ bgcolor: theme.secondary, color: theme.text.secondary }}
                   />
                 </Box>
                 <Box>
@@ -653,7 +652,7 @@ const StudentProfile = () => {
                     variant="contained"
                     color="primary"
                     size="small"
-                    sx={{ 
+                    sx={{
                       ml: 1,
                       bgcolor: theme.primary,
                       '&:hover': {
@@ -778,9 +777,90 @@ const StudentProfile = () => {
     </Box>
   );
 
+  const renderMyBookings = () => (
+    <Box>
+      <Typography variant="h6" sx={titleStyle}>
+        <EventIcon sx={iconStyle} />
+        我的预约
+      </Typography>
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          fullWidth
+          placeholder="搜索预约"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: <SearchIcon sx={{ mr: 1, color: theme.text.secondary }} />,
+          }}
+        />
+      </Box>
+      <Grid container spacing={2}>
+        {appointments.map((appointment) => (
+          <Grid item xs={12} key={appointment.id}>
+            <Paper sx={cardStyle}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Box>
+                  <Typography variant="h6" gutterBottom sx={{ color: theme.text.primary }}>
+                    {appointment.course}
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <PersonIcon fontSize="small" sx={{ color: theme.text.secondary }} />
+                      <Typography variant="body2" sx={{ color: theme.text.secondary }}>
+                        {appointment.teacher}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CalendarTodayIcon fontSize="small" sx={{ color: theme.text.secondary }} />
+                      <Typography variant="body2" sx={{ color: theme.text.secondary }}>
+                        {appointment.date} {appointment.time}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Chip
+                    label={appointment.status}
+                    color={appointment.status === '已确认' ? 'success' : 'warning'}
+                    size="small"
+                    sx={{ mr: 1 }}
+                  />
+                </Box>
+                <Box>
+                  {appointment.status === '待确认' && (
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      size="small"
+                      sx={{ mr: 1 }}
+                    >
+                      取消预约
+                    </Button>
+                  )}
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    size="small"
+                    sx={{
+                      borderColor: theme.primary,
+                      color: theme.primary,
+                      '&:hover': {
+                        borderColor: theme.primaryDark,
+                        backgroundColor: 'rgba(46, 125, 50, 0.08)'
+                      }
+                    }}
+                  >
+                    查看详情
+                  </Button>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-      <StudentNav />
       <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', bgcolor: theme.background.default }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold', color: theme.primary }}>
@@ -790,11 +870,11 @@ const StudentProfile = () => {
 
         <Box sx={{ mb: 4 }}>
           <Paper sx={{ p: 3, bgcolor: theme.background.paper }}>
-            <Tabs 
-              value={currentTab} 
-              onChange={handleTabChange} 
-              centered 
-              sx={{ 
+            <Tabs
+              value={currentTab}
+              onChange={handleTabChange}
+              centered
+              sx={{
                 mb: 3,
                 '& .MuiTab-root': {
                   color: theme.text.secondary,
@@ -812,6 +892,7 @@ const StudentProfile = () => {
               <Tab icon={<HistoryIcon />} label="课程记录" />
               <Tab icon={<BookIcon />} label="课程预约" />
               <Tab icon={<TimelineIcon />} label="学习进度" />
+              <Tab icon={<EventIcon />} label="我的预约" />
             </Tabs>
 
             <Box sx={{ mt: 3 }}>
@@ -819,6 +900,7 @@ const StudentProfile = () => {
               {currentTab === 1 && renderCourseHistory()}
               {currentTab === 2 && renderCourseBooking()}
               {currentTab === 3 && renderLearningProgress()}
+              {currentTab === 4 && renderMyBookings()}
             </Box>
           </Paper>
         </Box>
@@ -843,10 +925,10 @@ const StudentProfile = () => {
                 {isEditing ? '保存修改' : '编辑资料'}
               </Button>
             </Box>
-            <Accordion 
-              expanded={isEditing} 
+            <Accordion
+              expanded={isEditing}
               onChange={(e, expanded) => setIsEditing(expanded)}
-              sx={{ 
+              sx={{
                 boxShadow: 'none',
                 '&:before': {
                   display: 'none',
@@ -855,7 +937,7 @@ const StudentProfile = () => {
             >
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
-                sx={{ 
+                sx={{
                   display: 'none',
                   '& .MuiAccordionSummary-content': {
                     margin: 0,

@@ -75,6 +75,11 @@ import {
   Comment,
   PersonAdd
 } from '@mui/icons-material';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { API_URL } from '../config';
+import { createBooking } from '../services/bookingService';
 
 // 教师数据
 const teachersData = {
@@ -369,6 +374,7 @@ const Home = () => {
   const [teachers, setTeachers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedLanguage, setSelectedLanguage] = useState('english');
+  const navigate = useNavigate();
 
   // 定义新的配色方案
   const colors = {
@@ -632,6 +638,19 @@ const Home = () => {
     handleCloseBooking();
   };
 
+  const handleBooking = async (teacherId, courseId, scheduleId) => {
+    try {
+      console.log('Creating booking with:', { courseId, scheduleId });
+      const response = await createBooking(courseId, scheduleId);
+      console.log('Booking response:', response);
+      toast.success('预约成功！');
+      navigate('/student/bookings');
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast.error(error.response?.data?.error || '预约失败，请重试');
+    }
+  };
+
   useEffect(() => {
     // 初始化教师数据
     const initTeachers = async () => {
@@ -651,9 +670,9 @@ const Home = () => {
   }, []);
 
   return (
-    <Container 
-      maxWidth="xl" 
-      sx={{ 
+    <Container
+      maxWidth="xl"
+      sx={{
         mb: 4,
         px: 0
       }}

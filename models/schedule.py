@@ -13,6 +13,10 @@ class Schedule(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
+    # 关系
+    course = db.relationship('Course', back_populates='schedules')
+    teacher = db.relationship('User', backref=db.backref('schedules', lazy=True))
+    
     def __repr__(self):
         return f'<Schedule {self.id}>'
 

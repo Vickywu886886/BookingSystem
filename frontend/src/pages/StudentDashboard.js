@@ -38,7 +38,6 @@ import {
   Person as PersonIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import StudentNav from '../components/StudentNav';
 
 const DashboardCard = ({ title, icon, children, onClick }) => (
   <Card
@@ -154,22 +153,8 @@ const StudentDashboard = () => {
   }
 
   return (
-    <Container 
-      maxWidth="xl" 
-      sx={{ 
-        mb: 4,
-        px: 0
-      }}
-    >
-      <StudentNav />
-      <Paper sx={{ 
-        p: 2, 
-        display: 'flex', 
-        flexDirection: 'column',
-        borderRadius: 0,
-        mt: 0,
-        mr: 0
-      }}>
+    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Paper sx={{ p: 3, display: 'flex', flexDirection: 'column', bgcolor: '#f5f5f5' }}>
         <Typography variant="h6" gutterBottom>
           学习中心
         </Typography>

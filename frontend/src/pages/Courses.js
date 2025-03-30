@@ -34,7 +34,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import { useNavigate } from 'react-router-dom';
-import StudentNav from '../components/StudentNav';
 
 const CategoryCard = styled(Paper)(({ active }) => ({
   padding: '15px',
@@ -262,17 +261,16 @@ const Courses = () => {
   });
 
   return (
-    <Container 
-      maxWidth="xl" 
-      sx={{ 
+    <Container
+      maxWidth="xl"
+      sx={{
         mb: 4,
         px: 0
       }}
     >
-      <StudentNav />
-      <Paper sx={{ 
-        p: 2, 
-        display: 'flex', 
+      <Paper sx={{
+        p: 2,
+        display: 'flex',
         flexDirection: 'column',
         borderRadius: 0,
         mt: 0,

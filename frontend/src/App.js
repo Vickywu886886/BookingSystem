@@ -9,6 +9,7 @@ import Home from './pages/Home';
 import Courses from './pages/Courses';
 import StudentProfile from './pages/StudentProfile';
 import Onboarding from './pages/Onboarding';
+import MyBookings from './pages/student/MyBookings';
 
 // 导入教师端页面
 import TeacherDashboard from './pages/teacher/Dashboard';
@@ -62,6 +63,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['student']}>
                 <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/student/bookings"
+            element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <MyBookings />
               </ProtectedRoute>
             }
           />
