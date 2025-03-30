@@ -47,7 +47,11 @@ const Login = () => {
       const response = await login(formData);
       // 存储用户信息和token
       localStorage.setItem('user', JSON.stringify(response.user));
+<<<<<<< HEAD
       localStorage.setItem('token', response.access_token);
+=======
+      localStorage.setItem('token', response.token);
+>>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
 
       // 根据用户角色重定向
       switch (response.user.role) {
@@ -70,7 +74,11 @@ const Login = () => {
           navigate('/');
       }
     } catch (err) {
+<<<<<<< HEAD
       setError('用户名或密码错误');
+=======
+      setError('账号或密码错误');
+>>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
     } finally {
       setLoading(false);
     }
@@ -86,10 +94,17 @@ const Login = () => {
       }}
     >
       <Container component="main" maxWidth="xs">
+<<<<<<< HEAD
         <Paper
           elevation={6}
           sx={{
             p: 4,
+=======
+        <Paper 
+          elevation={6} 
+          sx={{ 
+            p: 4, 
+>>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
             width: '100%',
             borderRadius: 2,
             background: '#ffffff',
@@ -98,30 +113,49 @@ const Login = () => {
         >
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
             <SchoolIcon sx={{ fontSize: 48, color: '#2e7d32', mb: 1 }} />
+<<<<<<< HEAD
             <Typography component="h1" variant="h4" align="center" gutterBottom sx={{
+=======
+            <Typography component="h1" variant="h4" align="center" gutterBottom sx={{ 
+>>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
               color: '#2e7d32',
               fontWeight: 'bold'
             }}>
               课程预约系统
             </Typography>
             <Typography variant="subtitle1" color="text.secondary">
+<<<<<<< HEAD
               请使用用户名登录
             </Typography>
           </Box>
 
+=======
+              请登录您的账号
+            </Typography>
+          </Box>
+          
+>>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
               margin="normal"
               required
               fullWidth
               id="username"
+<<<<<<< HEAD
               label="用户名"
+=======
+              label="账号"
+>>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
               name="username"
               autoComplete="username"
               autoFocus
@@ -171,8 +205,13 @@ const Login = () => {
               type="submit"
               fullWidth
               variant="contained"
+<<<<<<< HEAD
               sx={{
                 mt: 3,
+=======
+              sx={{ 
+                mt: 3, 
+>>>>>>> c8252f0dd2b94410bd1cf91957a2c69ff147b6c7
                 mb: 2,
                 py: 1.5,
                 borderRadius: 2,
